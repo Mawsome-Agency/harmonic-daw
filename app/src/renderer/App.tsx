@@ -4,11 +4,15 @@ import { ArrangementView } from './components/arrangement/ArrangementView';
 import { MixerPanel } from './components/mixer/MixerPanel';
 import { useProjectStore } from './store/projectStore';
 import { useTransportStore } from './store/transportStore';
+import { useAudioSync } from './engine/useAudioSync';
 import styles from './App.module.css';
 
 export function App() {
   const { newProject, project } = useProjectStore();
   const { setTransportState } = useTransportStore();
+
+  // Keep Web Audio engine in sync with project tracks
+  useAudioSync();
 
   // Initialize with a default project on first load
   useEffect(() => {
@@ -17,9 +21,9 @@ export function App() {
     }
   }, [newProject, project]);
 
-  // Subscribe to engine transport events
+  // Subscribe to engine transport events (Electron mode)
   useEffect(() => {
-    const unsubscribe = window.harmonic?.on('engine:transport', (state) => {
+    const unsubscribe = window.harmonic?.on?.('engine:transport', (state) => {
       setTransportState(state);
     });
     return () => unsubscribe?.();
@@ -59,7 +63,7 @@ export function App() {
         e.preventDefault();
         const { project, filePath } = useProjectStore.getState();
         if (project) {
-          window.harmonic['fs:save-project'](project, filePath ?? undefined)
+          window.harmonic?.['fs:save-project']?.(project, filePath ?? undefined)
             .then((path) => useProjectStore.getState().markSaved(path as string))
             .catch(console.error);
         }

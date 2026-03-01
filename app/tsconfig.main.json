@@ -8,10 +8,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "resolveJsonModule": true,
     "paths": {
-      "@harmonic/shared": ["../shared/src"]
+      "@harmonic/shared": ["../shared/dist"]
     }
   },
   "include": ["src/main/**/*", "src/preload/**/*"],
