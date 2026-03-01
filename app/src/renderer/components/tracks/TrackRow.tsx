@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import type { Track, AudioClip, MidiClip } from '@harmonic/shared';
+import type { Track } from '@harmonic/shared';
 import { useProjectStore } from '../../store/projectStore';
+import { loadAudioFileOnTrack } from '../../engine/useAudioSync';
+import { webAudioEngine } from '../../engine/webAudioEngine';
 import { ClipView } from './ClipView';
 import styles from './TrackRow.module.css';
 
@@ -11,12 +13,74 @@ interface TrackRowProps {
 }
 
 export function TrackRow({ track, zoom, scrollX }: TrackRowProps) {
-  const { updateTrack, removeTrack, selectTrack } = useProjectStore();
+  const { updateTrack, removeTrack, selectTrack, addAudioClip } = useProjectStore();
   const selectedTrackIds = useProjectStore(s => s.project?.viewState.selectedTrackIds ?? []);
   const isSelected = selectedTrackIds.includes(track.id);
 
   const [nameEditing, setNameEditing] = useState(false);
   const [nameVal, setNameVal] = useState(track.name);
+  const [dragOver, setDragOver] = useState(false);
+
+  // Handle drag-and-drop of audio files onto the clip area
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    if (track.type !== 'audio') return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    setDragOver(true);
+  }, [track.type]);
+
+  const handleDragLeave = useCallback(() => setDragOver(false), []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (track.type !== 'audio') return;
+
+    const files = Array.from(e.dataTransfer.files).filter(f =>
+      f.type.startsWith('audio/') || /\.(wav|mp3|ogg|flac|aiff|aac|m4a)$/i.test(f.name)
+    );
+
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const clip = addAudioClip(track.id, {
+        name: file.name.replace(/\.[^.]+$/, ''),
+        startBeat: 0,
+        durationBeats: 16,
+        filePath: file.name,
+        fileOffset: 0,
+        gain: 1,
+        fadeInBeats: 0,
+        fadeOutBeats: 0,
+        reversed: false,
+        color: track.color,
+      });
+      await loadAudioFileOnTrack(track.id, clip.id, arrayBuffer);
+    }
+  }, [track.id, track.type, track.color, addAudioClip]);
+
+  // Click-to-browse fallback
+  const handleClipAreaClick = useCallback(async () => {
+    if (track.type !== 'audio' || track.audioClips.length > 0) return;
+    // Show open dialog via Electron IPC (only in Electron context)
+    try {
+      const paths = await window.harmonic?.['fs:open-file-dialog']?.({
+        title: 'Open Audio File',
+        filters: [{ name: 'Audio', extensions: ['wav', 'mp3', 'ogg', 'flac', 'aiff', 'aac', 'm4a'] }],
+        multiSelect: false,
+      });
+      if (paths && paths.length > 0) {
+        // In Electron context, we'd fetch via IPC. In browser, we use file input instead.
+        console.log('File selected:', paths[0]);
+      }
+    } catch {
+      // Not in Electron — no-op
+    }
+  }, [track.type, track.audioClips.length]);
+
+  const handleTestTone = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    webAudioEngine.playSineOnTrack(track.id, 440).catch(console.error);
+  }, [track.id]);
 
   const handleNameCommit = useCallback(() => {
     setNameEditing(false);
@@ -127,7 +191,18 @@ export function TrackRow({ track, zoom, scrollX }: TrackRowProps) {
       </div>
 
       {/* Clip canvas */}
-      <div className={styles.clips}>
+      <div
+        className={`${styles.clips} ${dragOver ? styles.dragOver : ''}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={handleClipAreaClick}
+        title={track.type === 'audio' && track.audioClips.length === 0 ? 'Drop audio file here' : ''}
+      >
+        {track.type === 'audio' && track.audioClips.length === 0 && !dragOver && (
+          <div className={styles.dropHint}>Drop audio file / click to browse</div>
+        )}
+        {dragOver && <div className={styles.dropActive}>Drop to load audio</div>}
         {track.audioClips.map(clip => (
           <ClipView key={clip.id} clip={clip} trackId={track.id} type="audio" zoom={zoom} scrollX={scrollX} />
         ))}
@@ -135,6 +210,17 @@ export function TrackRow({ track, zoom, scrollX }: TrackRowProps) {
           <ClipView key={clip.id} clip={clip} trackId={track.id} type="midi" zoom={zoom} scrollX={scrollX} />
         ))}
       </div>
+
+      {/* Test tone button on audio tracks */}
+      {track.type === 'audio' && (
+        <button
+          className={styles.testToneBtn}
+          onClick={handleTestTone}
+          title="Play test tone (440 Hz sine wave)"
+        >
+          ♪
+        </button>
+      )}
     </div>
   );
 }
