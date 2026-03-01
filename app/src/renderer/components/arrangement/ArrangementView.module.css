@@ -1,0 +1,81 @@
+.arrangement {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-0);
+  position: relative;
+}
+
+.header {
+  display: flex;
+  height: 28px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--bg-4);
+  background: var(--bg-1);
+}
+
+.trackHeaderCorner {
+  width: var(--track-header-width);
+  flex-shrink: 0;
+  border-right: 1px solid var(--bg-4);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.timelineWrapper {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── Add track ────────────────────────────────────────────────────────────── */
+.addTrackWrapper { position: relative; }
+
+.addTrackBtn {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--bg-5);
+  transition: all var(--transition-fast);
+}
+
+.addTrackBtn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.addTrackMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  background: var(--bg-3);
+  border: 1px solid var(--bg-5);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  min-width: 140px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.addTrackMenuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-primary);
+  transition: background var(--transition-fast);
+}
+
+.addTrackMenuItem:hover { background: var(--bg-5); }

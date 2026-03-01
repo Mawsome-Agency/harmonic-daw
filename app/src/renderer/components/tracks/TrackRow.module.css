@@ -1,0 +1,135 @@
+.row {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid var(--bg-3);
+  position: relative;
+  transition: background var(--transition-fast);
+  cursor: pointer;
+}
+
+.row:hover { background: rgba(255,255,255,0.02); }
+.row.selected { background: rgba(79, 142, 247, 0.07); }
+.row.muted { opacity: 0.5; }
+
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  width: var(--track-header-width);
+  flex-shrink: 0;
+  background: var(--bg-2);
+  border-right: 1px solid var(--bg-4);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  cursor: text;
+}
+
+.nameInput {
+  flex: 1;
+  font-size: 11px;
+  padding: 1px 4px;
+  height: 18px;
+  background: var(--bg-4);
+  border-color: var(--accent);
+}
+
+.trackType {
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  gap: 3px;
+}
+
+.btn {
+  width: 20px;
+  height: 16px;
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 2px;
+  background: var(--bg-4);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.btn:hover { background: var(--bg-5); color: var(--text-primary); }
+.mutedBtn { background: var(--color-warning); color: #000; }
+.soloedBtn { background: #f5e642; color: #000; }
+.armedBtn { background: var(--color-record); color: #fff; }
+.deleteBtn:hover { background: var(--color-record); color: #fff; }
+
+/* ─── Faders ──────────────────────────────────────────────────────────────── */
+.faderRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.miniLabel {
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.miniSlider {
+  flex: 1;
+  height: 3px;
+  appearance: none;
+  background: var(--bg-5);
+  border-radius: 2px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.miniSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+/* ─── Clips area ──────────────────────────────────────────────────────────── */
+.clips {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent calc(var(--beat-width, 80px) - 1px),
+    var(--bg-2) calc(var(--beat-width, 80px) - 1px),
+    var(--bg-2) var(--beat-width, 80px)
+  );
+}

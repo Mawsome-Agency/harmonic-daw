@@ -1,0 +1,30 @@
+{
+  "name": "harmonic-daw",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Harmonic — AI-native digital audio workstation",
+  "workspaces": [
+    "app",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=app",
+    "build": "npm run build --workspace=shared && npm run build --workspace=app",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "engine:configure": "cd engine && cmake -B build -DCMAKE_BUILD_TYPE=Release",
+    "engine:build": "cd engine && cmake --build build --config Release -j$(nproc)",
+    "engine:clean": "rm -rf engine/build"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  }
+}

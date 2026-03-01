@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── TypeScript / Renderer ────────────────────────────────────────────────
+  app:
+    name: App (TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build --workspace=@harmonic/shared
+      - run: npm run lint --workspace=@harmonic/app --if-present
+      - run: npm run build:renderer --workspace=@harmonic/app
+
+  # ─── C++ Engine ───────────────────────────────────────────────────────────
+  engine-macos:
+    name: Engine (macOS)
+    runs-on: macos-14
+    env:
+      JUCE_DIR: ${{ github.workspace }}/JUCE
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache JUCE
+        uses: actions/cache@v4
+        with:
+          path: JUCE
+          key: juce-7-${{ runner.os }}
+      - name: Install JUCE
+        run: |
+          if [ ! -d "JUCE" ]; then
+            git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git
+          fi
+      - name: Configure
+        run: cmake -B engine/build -S engine -DCMAKE_BUILD_TYPE=Release -DJUCE_DIR=$JUCE_DIR
+      - name: Build
+        run: cmake --build engine/build --config Release -j$(sysctl -n hw.logicalcpu)
+      - name: Test
+        run: ./engine/build/engine_tests
+
+  engine-windows:
+    name: Engine (Windows)
+    runs-on: windows-2022
+    env:
+      JUCE_DIR: ${{ github.workspace }}/JUCE
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache JUCE
+        uses: actions/cache@v4
+        with:
+          path: JUCE
+          key: juce-7-${{ runner.os }}
+      - name: Install JUCE
+        run: |
+          if (-Not (Test-Path "JUCE")) {
+            git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git
+          }
+      - name: Configure
+        run: cmake -B engine/build -S engine -DCMAKE_BUILD_TYPE=Release -DJUCE_DIR=$env:JUCE_DIR
+      - name: Build
+        run: cmake --build engine/build --config Release
+
+  # ─── Electron package (macOS only, requires code signing in prod) ─────────
+  package:
+    name: Package
+    runs-on: macos-14
+    needs: [app, engine-macos]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build
+        env:
+          NODE_ENV: production
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: harmonic-macos
+          path: app/release/*.dmg
+          if-no-files-found: ignore

@@ -1,0 +1,160 @@
+.pianoRoll {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 360px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--bg-5);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.6);
+}
+
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--bg-4);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.tools { display: flex; gap: 4px; }
+
+.tool {
+  width: 28px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all var(--transition-fast);
+}
+
+.tool:hover { background: var(--bg-5); }
+.tool.active { background: var(--accent-dim); outline: 1px solid var(--accent); }
+
+.quantize {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.quantize select { font-size: 11px; padding: 2px 6px; }
+
+.closeBtn {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.closeBtn:hover { background: var(--color-record); color: #fff; }
+
+/* ─── Grid ────────────────────────────────────────────────────────────────── */
+.grid {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.keyboard {
+  width: 56px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-0);
+  border-right: 1px solid var(--bg-4);
+}
+
+.key {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.whiteKey {
+  background: #e8e8e8;
+  border-bottom: 1px solid #ccc;
+  z-index: 1;
+}
+
+.blackKey {
+  background: #222;
+  border-bottom: 1px solid #111;
+  z-index: 2;
+}
+
+.keyLabel {
+  font-size: 8px;
+  color: #888;
+  padding-left: 4px;
+  font-family: var(--font-mono);
+  pointer-events: none;
+}
+
+.noteArea {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.gridCanvas {
+  display: block;
+  cursor: crosshair;
+}
+
+/* ─── Velocity lane ───────────────────────────────────────────────────────── */
+.velocityLane {
+  height: 60px;
+  display: flex;
+  border-top: 1px solid var(--bg-4);
+  flex-shrink: 0;
+  background: var(--bg-0);
+}
+
+.velocityLabel {
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  border-right: 1px solid var(--bg-4);
+}
+
+.velocityBars {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.velocityBar {
+  position: absolute;
+  bottom: 0;
+  border-radius: 1px 1px 0 0;
+  min-width: 4px;
+  cursor: pointer;
+}
+
+.velocityBar:hover { opacity: 0.8; }

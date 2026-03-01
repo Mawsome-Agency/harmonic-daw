@@ -1,0 +1,34 @@
+node_modules/
+dist/
+build/
+.cache/
+*.log
+.DS_Store
+Thumbs.db
+
+# Engine build artifacts
+engine/build/
+engine/JuceLibraryCode/
+*.o
+*.a
+*.dylib
+*.dll
+*.so
+
+# Electron
+app/release/
+app/.webpack/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Test output
+coverage/
+.nyc_output/

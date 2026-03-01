@@ -1,0 +1,15 @@
+{
+  "name": "@harmonic/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Harmonic audio engine — native Node.js addon (JUCE C++)",
+  "main": "build/harmonic_engine.node",
+  "scripts": {
+    "configure": "cmake -B build -DCMAKE_BUILD_TYPE=Release",
+    "build": "cmake --build build --config Release -j4",
+    "clean": "rm -rf build"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.1.0"
+  }
+}

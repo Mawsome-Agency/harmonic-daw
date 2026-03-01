@@ -1,0 +1,195 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--transport-height);
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--bg-4);
+  padding: 0 12px;
+  flex-shrink: 0;
+  /* macOS traffic lights offset */
+  padding-left: max(12px, env(titlebar-area-x, 80px));
+  -webkit-app-region: drag;
+  gap: 16px;
+}
+
+.bar > * {
+  -webkit-app-region: no-drag;
+}
+
+/* ─── App name ────────────────────────────────────────────────────────────── */
+.appName {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.appNameHarmonic {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.projectName {
+  font-size: 12px;
+  color: var(--text-secondary);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dirtyDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-warning);
+  flex-shrink: 0;
+}
+
+/* ─── Center ──────────────────────────────────────────────────────────────── */
+.center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ─── Position ────────────────────────────────────────────────────────────── */
+.positionDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-3);
+  border: 1px solid var(--bg-5);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  min-width: 120px;
+  cursor: default;
+}
+
+.positionText {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.positionLabel {
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-top: 1px;
+}
+
+/* ─── Controls ────────────────────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.transportBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.transportBtn:hover {
+  background: var(--bg-4);
+  color: var(--text-primary);
+}
+
+.transportBtn.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.recordBtn { color: var(--color-record); opacity: 0.6; }
+.recordBtn:hover { opacity: 1; background: rgba(232, 68, 68, 0.12); }
+.recordBtn.recordActive {
+  opacity: 1;
+  background: rgba(232, 68, 68, 0.2);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.loopActive { color: var(--accent); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─── BPM ─────────────────────────────────────────────────────────────────── */
+.bpmControl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-3);
+  border: 1px solid var(--bg-5);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  cursor: ns-resize;
+  min-width: 70px;
+  transition: border-color var(--transition-fast);
+}
+
+.bpmControl:hover { border-color: var(--accent); }
+
+.bpmValue {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bpmLabel {
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ─── Time sig ────────────────────────────────────────────────────────────── */
+.timeSig {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.timeSigDiv { color: var(--text-muted); font-size: 14px; }
+
+/* ─── Right ───────────────────────────────────────────────────────────────── */
+.right {
+  display: flex;
+  align-items: center;
+  min-width: 140px;
+  justify-content: flex-end;
+}
+
+.engineStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.statusText {
+  font-size: 11px;
+  color: var(--text-muted);
+}
