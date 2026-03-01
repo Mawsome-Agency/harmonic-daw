@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import type { Track } from '@harmonic/shared';
 import { useProjectStore } from '../../store/projectStore';
 import { loadAudioFileOnTrack } from '../../engine/useAudioSync';
@@ -20,6 +20,7 @@ export function TrackRow({ track, zoom, scrollX }: TrackRowProps) {
   const [nameEditing, setNameEditing] = useState(false);
   const [nameVal, setNameVal] = useState(track.name);
   const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle drag-and-drop of audio files onto the clip area
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -58,24 +59,33 @@ export function TrackRow({ track, zoom, scrollX }: TrackRowProps) {
     }
   }, [track.id, track.type, track.color, addAudioClip]);
 
-  // Click-to-browse fallback
-  const handleClipAreaClick = useCallback(async () => {
+  // Click-to-browse: opens native file picker
+  const handleClipAreaClick = useCallback(() => {
     if (track.type !== 'audio' || track.audioClips.length > 0) return;
-    // Show open dialog via Electron IPC (only in Electron context)
-    try {
-      const paths = await window.harmonic?.['fs:open-file-dialog']?.({
-        title: 'Open Audio File',
-        filters: [{ name: 'Audio', extensions: ['wav', 'mp3', 'ogg', 'flac', 'aiff', 'aac', 'm4a'] }],
-        multiSelect: false,
-      });
-      if (paths && paths.length > 0) {
-        // In Electron context, we'd fetch via IPC. In browser, we use file input instead.
-        console.log('File selected:', paths[0]);
-      }
-    } catch {
-      // Not in Electron — no-op
-    }
+    fileInputRef.current?.click();
   }, [track.type, track.audioClips.length]);
+
+  const handleFileInputChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const clip = addAudioClip(track.id, {
+        name: file.name.replace(/\.[^.]+$/, ''),
+        startBeat: 0,
+        durationBeats: 16,
+        filePath: file.name,
+        fileOffset: 0,
+        gain: 1,
+        fadeInBeats: 0,
+        fadeOutBeats: 0,
+        reversed: false,
+        color: track.color,
+      });
+      await loadAudioFileOnTrack(track.id, clip.id, arrayBuffer);
+    }
+    // Reset so same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [track.id, track.type, track.color, addAudioClip]);
 
   const handleTestTone = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -220,6 +230,19 @@ export function TrackRow({ track, zoom, scrollX }: TrackRowProps) {
         >
           ♪
         </button>
+      )}
+
+      {/* Hidden file input for audio loading */}
+      {track.type === 'audio' && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="audio/*,.wav,.mp3,.ogg,.flac,.aiff,.aac,.m4a"
+          multiple
+          style={{ display: 'none' }}
+          onChange={handleFileInputChange}
+          onClick={e => e.stopPropagation()}
+        />
       )}
     </div>
   );
