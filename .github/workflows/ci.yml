@@ -40,6 +40,12 @@ jobs:
           if [ ! -d "JUCE" ]; then
             git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git
           fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install engine Node deps
+        run: npm install
+        working-directory: engine
       - name: Configure
         run: cmake -B engine/build -S engine -DCMAKE_BUILD_TYPE=Release -DJUCE_DIR=$JUCE_DIR
       - name: Build
@@ -64,6 +70,12 @@ jobs:
           if (-Not (Test-Path "JUCE")) {
             git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git
           }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install engine Node deps
+        run: npm install
+        working-directory: engine
       - name: Configure
         run: cmake -B engine/build -S engine -DCMAKE_BUILD_TYPE=Release -DJUCE_DIR=$env:JUCE_DIR
       - name: Build
