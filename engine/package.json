@@ -10,6 +10,7 @@
     "clean": "rm -rf build"
   },
   "dependencies": {
-    "node-addon-api": "^8.1.0"
+    "node-addon-api": "^8.1.0",
+    "node-gyp-build": "^4.8.1"
   }
 }
